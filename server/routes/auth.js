@@ -7,31 +7,40 @@ const router = express.Router();
 const User = require("../models/User")
 
 router.post("/register", async (req, res) => {
-    
     const {username, email, password} = req.body;
 
-    const hashPassword = await bcrypt.hashSync(password, 10);
-
-    const newUser = new User({
-        username: username,
-        email: email,
-        password: hashPassword
-    })
-
     try {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: "Email is already registered" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = new User({
+            username: username,
+            email: email,
+            password: hashedPassword
+        })
         const savedUser = await newUser.save();
-        res.status(201).json({message: "User added successfully", user: savedUser});
+
+        res.status(201).json({message: "User registered successfully", 
+            user: {
+            id: savedUser._id,
+            username: savedUser.username,
+            email: savedUser.email,
+        },
+    });
     } catch (error) {
         res.status(400).json({message:"Server error", error: error.message});
     }
-
 });
 
 router.post("/login", async (req, res) => {
     const {email, password} = req.body;
+
     try {
         const user = await User.findOne(email);
-    
         if(!user){
             return res.status(404).json({message: "User not found"});
         }
@@ -59,5 +68,6 @@ router.post("/login", async (req, res) => {
     } catch (error) {
         res.status(500).json({message: "Server error", error: error.message});
     }
-
 });
+
+module.exports = router;
