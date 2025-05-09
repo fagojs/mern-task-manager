@@ -7,6 +7,10 @@ const User = require("../models/User")
 const registerUser = async (req, res) => {
     const {username, email, password} = req.body;
 
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -36,6 +40,10 @@ const registerUser = async (req, res) => {
 
 const loginUser =  async (req, res) => {
     const {email, password} = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+    }
 
     try {
         const user = await User.findOne({email});
