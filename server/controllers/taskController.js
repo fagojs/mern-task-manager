@@ -5,7 +5,7 @@ const getAllTasks = async (req, res)=> {
         const allTasks = await Task.find({user: req.user.id}).sort({ createdAt: -1 });
         res.status(200).json({message: "Task retrieved successfully", tasks: allTasks});
     } catch (error) {
-        res.status(401).json({message: "Server error", error: error.message});
+        res.status(500).json({message: "Server error", error: error.message});
     }
 };
 
@@ -27,7 +27,7 @@ const createTask = async (req, res) => {
             task: savedTask,
         });
     } catch (error) {
-        res.status(400).json({message: "Server error", error: error.message});
+        res.status(500).json({message: "Server error", error: error.message});
     }
 };
 
@@ -56,7 +56,7 @@ const updateTask = async (req, res)=>{
             task: updatedTask,
         });
     } catch (error) {
-        res.status(401).json({ message: "Server error", error: error.message });
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
@@ -74,7 +74,7 @@ const deleteTask = async (req, res)=>{
         await task.deleteOne();
         res.status(200).json({message: "Task deleted successfully"});
     } catch (error) {
-        res.status(401).json({ message: "Server error", error: error.message });
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
